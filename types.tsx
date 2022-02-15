@@ -25,11 +25,32 @@ export type RootStackScreenProps<Screen extends keyof RootStackParamList> = Nati
 >;
 
 export type RootTabParamList = {
-  TabOne: undefined;
-  TabTwo: undefined;
+  Camera: undefined;
+  Chats: undefined;
+  Status: undefined;
+  Calls: undefined;
 };
 
 export type RootTabScreenProps<Screen extends keyof RootTabParamList> = CompositeScreenProps<
   BottomTabScreenProps<RootTabParamList, Screen>,
   NativeStackScreenProps<RootStackParamList>
 >;
+
+export type User = {
+  id: string,
+  profile?: string,
+  name: String,
+  lastSeen: Number
+}
+
+export type Message = {
+  id: string,
+  content: String,
+  createdAt: Number
+}
+
+export type Chat = {
+  id: string;
+  user: User;
+  lastMessage: Message
+};
