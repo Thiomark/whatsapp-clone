@@ -12,6 +12,7 @@ const currentChat: Chat = {
         name: 'Itumeleng',
         id: 'sd',
         lastSeen: 123455,
+        profile: 'https://images.pexels.com/photos/10840765/pexels-photo-10840765.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=750&w=1260'
     },
     lastMessage: {
         id: 'sd',
@@ -32,8 +33,6 @@ const ChatsScreen = ({ navigation }: RootTabScreenProps<'Chats'>) => {
                     )
                 }}
             />
-
-            
         </View>
     );
 }
