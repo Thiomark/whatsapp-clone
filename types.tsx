@@ -50,7 +50,7 @@ export type Message = {
   id: string,
   content: String,
   createdAt: Number,
-  user: User
+  user?: User
 }
 
 export type Chat = {

@@ -20,7 +20,6 @@ const ChatComponent: React.FC<Chat> = ({id, lastMessage, user}) => {
                     source={user.profile ? {uri: user.profile} : require('../assets/avator.jpg')}
                 />
             </View>
-            {/* <View style={tw`bg-green-500 h-14 rounded-full w-14`}/> */}
             <View style={tw`flex-1 ml-3`}>
                <View style={tw`flex flex-row items-center justify-between`}>
                     <Text style={[{fontSize: 16}, tw`font-bold`]}>{user.name}</Text>

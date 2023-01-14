@@ -1,9 +1,9 @@
-import { EvilIcons, FontAwesome, Fontisto, Ionicons } from '@expo/vector-icons';
+import { EvilIcons, Fontisto, Ionicons } from '@expo/vector-icons';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs'
 import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import * as React from 'react';
-import { ColorSchemeName, Image, Pressable, Text, TouchableOpacity, View } from 'react-native';
+import { Animated, ColorSchemeName, Image, Pressable, Dimensions, Text, TouchableOpacity, View } from 'react-native';
 import Colors from '../constants/Colors'
 
 import useColorScheme from '../hooks/useColorScheme';
@@ -18,6 +18,11 @@ import LinkingConfiguration from './LinkingConfiguration';
 import { Feather } from '@expo/vector-icons'; 
 import tw from 'tailwind-react-native-classnames';
 
+const { width } = Dimensions.get('screen');
+
+const CAMERA_TAB_ITEM_WIDTH = width * 0.1;
+const NORMAL_TAB_ITEM_WIDTH = width * 0.3;
+
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
     return (
         <NavigationContainer
@@ -28,6 +33,81 @@ export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeNa
         </NavigationContainer>
     );
 }
+
+const MyTabBar = ({ state, descriptors, navigation } : any) => {
+    const colorScheme = useColorScheme();
+
+    return (
+      <View style={{ flexDirection: 'row' }}>
+        {state.routes.map((route: any, index: any) => {
+          const { options } = descriptors[route.key];
+          const label =
+            options.tabBarLabel !== undefined
+              ? options.tabBarLabel
+              : options.title !== undefined
+              ? options.title
+              : route.name;
+  
+          const isFocused = state.index === index;
+  
+          const onPress = () => {
+            const event = navigation.emit({
+              type: 'tabPress',
+              target: route.key,
+              canPreventDefault: true,
+            });
+  
+            if (!isFocused && !event.defaultPrevented) {
+              // The `merge: true` option makes sure that the params inside the tab screen are preserved
+              navigation.navigate({ name: route.name, merge: true });
+            }
+          };
+  
+          const onLongPress = () => {
+            navigation.emit({
+              type: 'tabLongPress',
+              target: route.key,
+            });
+          };
+  
+          const tabBarItemWidth = route.name === "Camera" ? CAMERA_TAB_ITEM_WIDTH : NORMAL_TAB_ITEM_WIDTH;
+  
+          return (
+            <TouchableOpacity
+                key={route.name}
+                accessibilityRole="button"
+                accessibilityState={isFocused ? { selected: true } : {}}
+                accessibilityLabel={options.tabBarAccessibilityLabel}
+                testID={options.tabBarTestID}
+                onPress={onPress}
+                onLongPress={onLongPress}
+                style={{ 
+                    width: tabBarItemWidth,
+                    display: 'flex',
+                    backgroundColor: Colors[colorScheme].tint,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    paddingBottom: 5,
+                    height: 40 
+                }}
+            >
+                {route.name === "Camera" ? (
+                    <Animated.View>
+                        <Fontisto name="camera" size={20} color="white" />
+                    </Animated.View>
+                ) : (
+                <Animated.Text style={{ 
+                    color: Colors[colorScheme].background, fontWeight: "bold" }}>
+                    {label}
+                </Animated.Text>
+                )}
+            </TouchableOpacity>
+          );
+        })}
+        <TabBarIndicator state={state}/>
+      </View>
+    );
+  }
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -115,31 +195,53 @@ const RootNavigator = () => {
 
 const TopTab = createMaterialTopTabNavigator<RootTabParamList>();
 
-const BottomTabNavigator = () => {
+const TabBarIndicator = ({ state }: any) => {
+    const [translateValue, setTranslateValue] = React.useState(new Animated.Value(CAMERA_TAB_ITEM_WIDTH));
+    const [itemWidth, setItemWidth] = React.useState(NORMAL_TAB_ITEM_WIDTH);
     const colorScheme = useColorScheme();
 
+    const slide = () => {
+        setItemWidth(state.routes[state.index].name === "Camera" ? CAMERA_TAB_ITEM_WIDTH : NORMAL_TAB_ITEM_WIDTH);
+        const toValue = state.routes[state.index].name === "Camera" ? 0 : state.routes[state.index].name === "Conversations"
+        ? CAMERA_TAB_ITEM_WIDTH
+        : CAMERA_TAB_ITEM_WIDTH + ((state.index - 1) * NORMAL_TAB_ITEM_WIDTH);
+        Animated.timing(translateValue, {
+            toValue: toValue,
+            duration: 300,
+            useNativeDriver: true
+        }).start();
+    }
+
+    React.useEffect(() => {
+        slide();
+    }, [state]);
+
+    return (
+        <Animated.View
+            style={{
+                position: 'absolute',
+                width: itemWidth,
+                borderBottomColor: Colors[colorScheme].background,
+                borderBottomWidth: 3,
+                bottom: 0,
+                transform: [{ translateX: translateValue }]
+            }} 
+        />
+    );
+
+}
+
+const BottomTabNavigator = () => {
     return (
         <TopTab.Navigator
+            tabBar={props => <MyTabBar {...props} />}
             initialRouteName="Camera"
-            screenOptions={{
-                tabBarActiveTintColor: Colors[colorScheme].background,
-                tabBarStyle: {
-                    backgroundColor: Colors[colorScheme].tint
-                },
-                tabBarIndicatorStyle: {
-                    backgroundColor: Colors[colorScheme].background,
-                    height: 2,
-                },
-                tabBarLabelStyle: {
-                    fontWeight: 'bold',
-                }
-            }}
         >
             <TopTab.Screen
                 name="Camera"
                 component={TabOneScreen}
                 options={{
-                    tabBarIcon: () => <Fontisto name="camera" size={20} color="white" />,
+                    tabBarIcon: () => <Fontisto style={{width: 50}} name="camera" size={20} color="white" />,
                     tabBarLabel: () => null,
                 }}
             />
