@@ -19,12 +19,12 @@ const IconButton:React.FC<{x1?: number , x2?: number}> = ({children, x1, x2}) =>
 const MessageComponent:React.FC<Message> = ({user, createdAt, content, id}) => {
     return (
         <View style={tw`px-2`}>
-            <View style={[{backgroundColor: user.id === loggedInUser ? greenColor : 'white', width: '85%'}, tw`relative ${user.id === loggedInUser ? 'ml-auto' : ''} rounded-md mb-2`]}>
+            <View style={[{backgroundColor: user?.id === loggedInUser ? greenColor : 'white', width: '85%'}, tw`relative ${user?.id === loggedInUser ? 'ml-auto' : ''} rounded-md mb-2`]}>
                 <View style={tw`p-2`}>
                     <Text style={tw`font-semibold`}>{content}</Text>
                     <Text style={[tw`text-right text-xs`, {color: '#9D9E9E'}]}>10:34</Text>
                 </View>
-                <View style={[tw`absolute ${user.id === loggedInUser ? '-mr-1 right-0' : '-ml-2'}`, style.triangle, {borderBottomColor: user.id === loggedInUser ? greenColor : 'white'}, {transform: [{ rotate: "-63deg" }]}]}></View>
+                <View style={[tw`absolute ${user?.id === loggedInUser ? '-mr-1 right-0' : '-ml-2'}`, style.triangle, {borderBottomColor: user?.id === loggedInUser ? greenColor : 'white'}, {transform: [{ rotate: "-63deg" }]}]}></View>
             </View>
         </View>
     )

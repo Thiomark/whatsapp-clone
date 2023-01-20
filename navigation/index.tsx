@@ -17,6 +17,7 @@ import LinkingConfiguration from './LinkingConfiguration';
 
 import { Feather } from '@expo/vector-icons'; 
 import tw from 'tailwind-react-native-classnames';
+import StatusScreen from '../screens/StatusScreen';
 
 const { width } = Dimensions.get('screen');
 
@@ -239,7 +240,7 @@ const BottomTabNavigator = () => {
         >
             <TopTab.Screen
                 name="Camera"
-                component={TabOneScreen}
+                component={TabTwoScreen}
                 options={{
                     tabBarIcon: () => <Fontisto style={{width: 50}} name="camera" size={20} color="white" />,
                     tabBarLabel: () => null,
@@ -251,7 +252,7 @@ const BottomTabNavigator = () => {
             />
             <TopTab.Screen
                 name="Status"
-                component={TabOneScreen}
+                component={StatusScreen}
             />
             <TopTab.Screen
                 name="Calls"
